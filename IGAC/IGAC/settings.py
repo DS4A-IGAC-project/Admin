@@ -29,7 +29,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
-    '192.168.0.19'
+    '192.168.0.99',
+    '0.0.0.0',
+    'jsbarbosa.ddns.net',
 ]
 
 

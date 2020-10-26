@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=IGACAdmin
+Exec=/home/pi/Documents/DS4A/IGAC-admin/run.sh
+StartupNotify=false
+Terminal=false

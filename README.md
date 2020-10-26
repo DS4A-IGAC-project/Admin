@@ -16,3 +16,8 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+### Run
+```
+gunicorn IGAC.wsgi -w4 -b 0.0.0.0:8000
+```
+
