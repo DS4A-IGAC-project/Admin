@@ -1,0 +1,11 @@
+[Unit]
+Description=IGAC Admin service
+
+[Service]
+Type=simple
+User=pi
+ExecStart=/home/pi/Documents/DS4A/IGAC-admin/script.sh
+Restart=always
+
+[Install]
+WantedBy=default.target
