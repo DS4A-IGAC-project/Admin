@@ -1,9 +1,10 @@
 from django.db import models
+from smart_selects.db_fields import ChainedForeignKey
 
 
 class BdpGeneralFiltrada(models.Model):
-    index = models.BigIntegerField(db_column='index')
-    cod_perfil = models.TextField(db_column='COD_PERFIL', primary_key=True)
+    index = models.BigIntegerField(blank=True, null=True, db_column='index')
+    cod_perfil = models.TextField(db_column='COD_PERFIL', primary_key=True, unique=True)
     simbolo_ucs = models.TextField(db_column='SIMBOLO_UCS', blank=True, null=True)
     tipo_ucs = models.TextField(db_column='TIPO_UCS', blank=True, null=True)
     departamento = models.TextField(db_column='DEPARTAMENTO', blank=True, null=True)
@@ -60,10 +61,13 @@ class BdpGeneralFiltrada(models.Model):
     def __str__(self):
         return f"{self.cod_perfil}"
 
+    def __unicode__(self):
+        return f"{self.cod_perfil}"
+
 
 class BdpDetalladaFiltrada(models.Model):
-    index = models.BigIntegerField(db_column='index')
-    horizontes = models.TextField(db_column='HORIZONTES', primary_key=True)
+    index = models.BigIntegerField(blank=True, null=True, db_column='index')
+    horizontes = models.TextField(db_column='HORIZONTES', primary_key=True, unique=True)
     cod_perfil = models.ForeignKey(BdpGeneralFiltrada, on_delete=models.CASCADE, db_column='COD_PERFIL')
     profundidad_efectiva = models.TextField(db_column='PROFUNDIDAD_EFECTIVA', blank=True,
                                             null=True)
@@ -111,13 +115,27 @@ class BdpDetalladaFiltrada(models.Model):
         verbose_name_plural = '2. BDP Detallada'
 
     def __str__(self):
-        return f"{self.cod_perfil}. Horizonte: {self.horizontes}"
+        return f"{self.horizontes}"
+
+    def __unicode__(self):
+        return f"{self.horizontes}"
 
 
 class BdlDetalladaFiltrada(models.Model):
     index = models.AutoField(primary_key=True, db_column='index')
     cod_perfil = models.ForeignKey(BdpGeneralFiltrada, on_delete=models.CASCADE, db_column='COD_PERFIL')
-    horizontes = models.ForeignKey(BdpDetalladaFiltrada, on_delete=models.CASCADE, db_column='HORIZONTES')
+
+    horizontes = ChainedForeignKey(
+        BdpDetalladaFiltrada,
+        chained_field='cod_perfil',
+        chained_model_field='cod_perfil',
+        show_all=False,
+        auto_choose=True,
+        sort=True,
+        db_column='HORIZONTES'
+    )
+
+    # horizontes = models.ForeignKey(BdpDetalladaFiltrada, on_delete=models.CASCADE, db_column='HORIZONTES')
     clase_textural = models.TextField(db_column='Clase Textural', blank=True,
                                       null=True)
     carbono_organico_co_percentage_field = models.FloatField(db_column='CARBONO ORGANICO {CO Percentage}', blank=True,
@@ -156,12 +174,15 @@ class BdlDetalladaFiltrada(models.Model):
     def __str__(self):
         return f"{self.horizontes}"
 
+    def __unicode__(self):
+        return f"{self.horizontes}"
+
 
 class Coordenadas(models.Model):
     index = models.AutoField(primary_key=True, db_column='index')
-    cod_perfil = models.ForeignKey(BdpGeneralFiltrada, on_delete=models.CASCADE, db_column='COD_PERFIL')
-    latitud = models.FloatField(db_column='LATITUD', blank=True, null=True)
-    longitud = models.FloatField(db_column='LONGITUD', blank=True, null=True)
+    cod_perfil = models.OneToOneField(BdpGeneralFiltrada, on_delete=models.CASCADE, db_column='COD_PERFIL')
+    latitud = models.FloatField(db_column='LATITUD')
+    longitud = models.FloatField(db_column='LONGITUD')
 
     class Meta:
         # managed = False
@@ -170,11 +191,7 @@ class Coordenadas(models.Model):
         verbose_name_plural = '4. Coordenadas'
 
     def __str__(self):
-        if self.latitud is not None and self.longitud is not None:
-            return f"{self.cod_perfil}. Latitud: {self.latitud:.5f}, Longitud: {self.longitud:.5f}"
-        elif self.latitud is None and self.longitud is not None:
-            return f"{self.cod_perfil}. Longitud: {self.longitud:.5f}"
-        elif self.longitud is None and self.latitud is not None:
-            return f"{self.cod_perfil}.  Latitud: {self.latitud:.5f}"
-        else:
-            return f"{self.cod_perfil}"
+        return f"{self.cod_perfil}"
+
+    def __unicode__(self):
+        return f"{self.cod_perfil}"

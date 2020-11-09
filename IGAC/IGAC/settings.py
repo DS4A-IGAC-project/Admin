@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'persistance'
+    'persistance',
+    'smart_selects'
 ]
 
 MIDDLEWARE = [
@@ -135,3 +136,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+USE_DJANGO_JQUERY = True
